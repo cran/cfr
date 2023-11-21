@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Estimating disease severity while correcting for reporting delays</title>
+
+<style type="text/css">detaiks.chunk-details > summary.chunk-summary {
+text-align: right;
+}
+details.chunk-details[open] > summary.chunk-summary::after {
+content: "Hide";
+}
+details.chunk-details[open] > summary.chunk-summary > span.chunk-summary-text {
+display: none;
+}
+</style>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">
+
+div.csl-bib-body { }
+div.csl-entry {
+clear: both;
+}
+.hanging div.csl-entry {
+margin-left:2em;
+text-indent:-2em;
+}
+div.csl-left-margin {
+min-width:2em;
+float:left;
+}
+div.csl-right-inline {
+margin-left:2em;
+padding-left:1em;
+}
+div.csl-indent {
+margin-left: 2em;
+}
+</style>
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Estimating disease severity while correcting for reporting delays</h1>
+
+
+
+<p>Understanding disease severity, and especially the case fatality risk (CFR), is key to outbreak response.
+During an outbreak there is often a delay between cases being reported, and the outcomes (for CFR, deaths) of those cases being known.
+Simply dividing total deaths to date by total cases to date may lead to an underestimate of the CFR rate in real-time, because many cases have outcomes that are not yet known.</p>
+<p>Knowing the distribution of these delays from previous outbreaks of the same (or similar) diseases, and accounting for them, can therefore help ensure less biased estimates of disease severity.
+See the <strong>Concept</strong> section at the end of this vignette for more on how reporting delays bias CFR estimates.</p>
+<p>The severity of a disease can be estimated while correcting for delays in reporting using methods outlines in <span class="citation">Nishiura et al. (<a href="#ref-nishiura2009">2009</a>)</span>, and which are implemented in the <em>cfr</em> package.</p>
+<div id="use-case" class="section level2 unnumbered alert alert-primary">
+<h2>Use case</h2>
+<p>A disease outbreak is underway. We want to know <strong>how severe the disease is</strong> in terms of the case fatality risk (CFR), but there is a delay between cases being reported, and the outcomes of those cases — whether recovery or death — being known. This is the <em>reporting delay</em>, and can be accounted for by knowing the reporting delay from past outbreaks.</p>
+</div>
+<div class="alert alert-secondary">
+<div id="what-we-have" class="section level3 unnumbered">
+<h3>What we have</h3>
+<ul>
+<li>A time-series of cases and deaths, (cases may be substituted by another indicator of infections over time);</li>
+<li>Data on the distribution of delays, describing the probability an individual will die <span class="math inline">\(t\)</span> days after they were initially infected.</li>
+</ul>
+</div>
+<div id="what-we-assume" class="section level3 unnumbered">
+<h3>What we assume</h3>
+<ul>
+<li>That data on reporting delays from past outbreaks is informative about reporting delays in the current outbreak.</li>
+</ul>
+</div>
+</div>
+<p>First we load the <em>cfr</em> package.</p>
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># load cfr</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(cfr)</span></code></pre></div>
+</details>
+<div id="case-and-death-data" class="section level2 unnumbered">
+<h2>Case and death data</h2>
+<p>Data on cases and deaths may be obtained from a number of publicly accessible sources, such as the <a href="https://ourworldindata.org/coronavirus">global Covid-19 dataset curated by Our World in Data</a>, a similar dataset made available through the R package <a href="https://github.com/epiforecasts/covidregionaldata"><em>covidregionaldata</em></a> <span class="citation">(<a href="#ref-palmer2021">Palmer et al. 2021</a>)</span>, or data on outbreaks of other infections made available in <a href="https://cran.r-project.org/package=outbreaks"><em>outbreaks</em></a>.</p>
+<p>In an outbreak response scenario, such data may also be compiled and shared locally.
+See the <a href="data_from_incidence2.html">vignette on working with data from <em>incidence2</em></a> on working with a common format of incidence data which can help interoperability with other formats.</p>
+<p>The <em>cfr</em> package requires only a data frame with three columns, “date”, “cases”, and “deaths”, giving the daily number of reported cases and deaths.</p>
+<p>Here, we use some data from the first Ebola outbreak, in the Democratic Republic of the Congo in 1976, that is included with this package <span class="citation">(<a href="#ref-camacho2014">Camacho et al. 2014</a>)</span>.</p>
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;ebola1976&quot;</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co"># view ebola dataset</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="fu">head</span>(ebola1976)</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co">#&gt;         date cases deaths</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co">#&gt; 1 1976-08-25     1      0</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co">#&gt; 2 1976-08-26     0      0</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co">#&gt; 3 1976-08-27     0      0</span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co">#&gt; 4 1976-08-28     0      0</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co">#&gt; 5 1976-08-29     0      0</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co">#&gt; 6 1976-08-30     0      0</span></span></code></pre></div>
+</details>
+</div>
+<div id="obtaining-data-on-reporting-delays" class="section level2">
+<h2>Obtaining data on reporting delays</h2>
+<p>We obtain the disease’s onset-to-death distribution from a more recent Ebola outbreak, reported in <span class="citation">Barry et al. (<a href="#ref-barry2018">2018</a>)</span>.
+The onset-to-death distribution is considered to be Gamma distributed, with a shape <span class="math inline">\(k\)</span> = 2.40 and a scale of <span class="math inline">\(\theta\)</span> = 3.33.</p>
+<div class="alert alert-warning">
+<p><strong>Note that</strong> while we use a continuous distribution here, it is more appropriate to use a discretised distribution instead as we are working with daily data.</p>
+<p><strong>Note also</strong> that we use the central estimates for each distribution parameter, and by ignoring uncertainty in these parameters the uncertainty in the resulting CFR is likely to be underestimated.</p>
+</div>
+<p>The forthcoming <a href="https://epiverse-trace.github.io/epiparameter/"><em>epiparameter</em> package</a> aims to be a library of epidemiological delay distributions, which can be accessed easily from within workflows.
+See the <a href="delay_distributions.html">vignette on using delay distributions</a> for more information on how to use this and other distribution objects supported by R to prepare delay density functions.</p>
+</div>
+<div id="estimate-disease-severity" class="section level2">
+<h2>Estimate disease severity</h2>
+<p>We use the function <code>cfr_static()</code> to calculate overall disease severity at the latest date of the outbreak.</p>
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">cfr_static</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="at">data =</span> ebola1976,</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="at">delay_density =</span> <span class="cf">function</span>(x) <span class="fu">dgamma</span>(x, <span class="at">shape =</span> <span class="fl">2.40</span>, <span class="at">scale =</span> <span class="fl">3.33</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>)</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt;   severity_mean severity_low severity_high</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; 1         0.959        0.842             1</span></span></code></pre></div>
+</details>
+<p>The <code>cfr_static()</code> function is well suited to small outbreaks where there are relatively few events and the time period under consideration if relatively brief, so the severity is unlikely to have changed over time.</p>
+<p>To understand how severity has changed over time (e.g. following vaccination or pathogen evolution), use the function <code>cfr_time_varying()</code>.
+This function is however not well suited to small outbreaks because it requires sufficiently many cases over time to estimate how CFR changes.
+More on this can be found on the <a href="estimate_time_varying_severity.html">vignette on estimating how disease severity varies over the course of an outbreak</a>.</p>
+</div>
+<div id="estimate-ascertainment-ratio" class="section level2">
+<h2>Estimate ascertainment ratio</h2>
+<p>It is important to know what proportion of cases in an outbreak are being ascertained to muster the appropriate response, and to estimate the overall burden of the outbreak.</p>
+<div class="alert alert-info">
+<p><strong>Note that</strong> the ascertainment ratio may be affected by a number of factors.
+When the main factor in low ascertainment is the lack of (access to) testing capacity, we refer to this as reporting or under-reporting.</p>
+</div>
+<p>The <code>estimate_ascertainment()</code> function estimates the ascertainment ratio using daily case and death data, the known severity of the disease from previous outbreaks, and optionally a delay distribution of onset-to-death.</p>
+<p>Here, we estimate reporting in the 1976 Ebola outbreak in the Congo, assuming that Ebola virus disease (at that time) had a baseline severity of about 0.7 (70% of cases result in deaths), based on CFR values estimated in later, larger datasets.
+We use the onset-to-death distribution from <span class="citation">Barry et al. (<a href="#ref-barry2018">2018</a>)</span>.</p>
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># estimate reporting with a baseline severity of 70%</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">estimate_ascertainment</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">data =</span> ebola1976,</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">delay_density =</span> <span class="cf">function</span>(x) <span class="fu">dgamma</span>(x, <span class="at">shape =</span> <span class="fl">2.40</span>, <span class="at">scale =</span> <span class="fl">3.33</span>),</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="at">severity_baseline =</span> <span class="fl">0.7</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>)</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co">#&gt;   ascertainment_mean ascertainment_low ascertainment_high</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co">#&gt; 1           0.729927               0.7          0.8313539</span></span></code></pre></div>
+</details>
+<p>This analysis suggests that between 70% and 83% of cases were reported in this outbreak.</p>
+<p>More details can be found in the <a href="estimate_ascertainment.html">vignette on estimating the proportion of cases that are reported during an outbreak</a>.</p>
+<hr />
+</div>
+<div id="concept-how-reporting-delays-bias-cfr-estimates" class="section level2">
+<h2>Concept: How reporting delays bias CFR estimates</h2>
+<p>Simply dividing the number of deaths by the number of cases would obtain a CFR that is a <em>naive estimator</em> of the true CFR.</p>
+<p>Suppose 10 people start showing symptoms of a disease on a given day and the end of that day all remain alive.
+Suppose that for the next 5 days, the numbers of new cases continue to rise until they reach 100 new cases on day 5.
+However, suppose that by day 5, all infected individuals remain alive.</p>
+<p>The naive estimate of the CFR calculated at the end of the first 5 days would be <em>zero</em>, because there would have been zero deaths in total — <em>at that point</em>.
+That is to say, the <em>outcomes</em> of cases (deaths) would not be known.</p>
+<p>Even after deaths begin to occur, this lag between the ascertainment of a case or hospitalisation and outcome leads to a consistently biased estimate.
+Hence, adjusting for such delays using an appropriate delay distribution is essential for accurate estimates of severity.</p>
+<hr />
+</div>
+<div id="references" class="section level2 unnumbered">
+<h2>References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-barry2018" class="csl-entry">
+Barry, Ahmadou, Steve Ahuka-Mundeke, Yahaya Ali Ahmed, Yokouide Allarangar, Julienne Anoko, Brett Nicholas Archer, Aaron Aruna Abedi, et al. 2018. <span>“Outbreak of Ebola virus disease in the Democratic Republic of the Congo, April–May, 2018: an epidemiological study.”</span> <em>The Lancet</em> 392 (10143): 213–21. <a href="https://doi.org/10.1016/S0140-6736(18)31387-4">https://doi.org/10.1016/S0140-6736(18)31387-4</a>.
+</div>
+<div id="ref-camacho2014" class="csl-entry">
+Camacho, A., A. J. Kucharski, S. Funk, J. Breman, P. Piot, and W. J. Edmunds. 2014. <span>“Potential for Large Outbreaks of Ebola Virus Disease.”</span> <em>Epidemics</em> 9 (December): 70–78. <a href="https://doi.org/10.1016/j.epidem.2014.09.003">https://doi.org/10.1016/j.epidem.2014.09.003</a>.
+</div>
+<div id="ref-nishiura2009" class="csl-entry">
+Nishiura, Hiroshi, Don Klinkenberg, Mick Roberts, and Johan A. P. Heesterbeek. 2009. <span>“Early Epidemiological Assessment of the Virulence of Emerging Infectious Diseases: A Case Study of an Influenza Pandemic.”</span> <em>PLOS ONE</em> 4 (8): e6852. <a href="https://doi.org/10.1371/journal.pone.0006852">https://doi.org/10.1371/journal.pone.0006852</a>.
+</div>
+<div id="ref-palmer2021" class="csl-entry">
+Palmer, Joseph, Katharine Sherratt, Richard Martin-Nielsen, Jonnie Bevan, Hamish Gibbs, Cmmid Group, Sebastian Funk, and Sam Abbott. 2021. <span>“Covidregionaldata: Subnational Data for COVID-19 Epidemiology.”</span> <em>Journal of Open Source Software</em> 6 (63): 3290. <a href="https://doi.org/10.21105/joss.03290">https://doi.org/10.21105/joss.03290</a>.
+</div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

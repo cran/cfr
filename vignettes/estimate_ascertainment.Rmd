@@ -1,0 +1,181 @@
+---
+title: "Estimating the proportion of cases that are ascertained during an outbreak"
+output:
+  bookdown::html_vignette2:
+    fig_caption: yes
+    code_folding: show
+pkgdown:
+  as_is: true
+bibliography: resources/library.json
+link-citations: true
+vignette: >
+  %\VignetteIndexEntry{Estimating the proportion of cases that are ascertained during an outbreak}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  dpi = 300,
+  fig.width = 5, fig.height = 3
+)
+```
+
+The ascertainment of cases during an outbreak is influenced by a multiple factor including testing capacity, the case definition, and sampling regime (e.g. symptom-based testing rather than random sampling).
+`estimate_ascertainment()` offers a convenient way to calculate the proportion of cases that is ascertained using a cases and deaths time-series, a baseline "known" severity, and optionally a distribution of delays between case reporting and death.
+
+The ascertainment ratio is calculated as the disease severity calculated from the data, divided by the "known" disease severity known or assumed from our best knowledge of the pathology of the disease.
+
+`estimate_ascertainment()` uses `cfr_static()` internally to estimate the delay-adjusted severity of the disease.
+
+::: {.alert .alert-warning}
+New to calculating disease severity using _cfr_? You might want to see the ["Get started" vignette first](cfr.html).
+:::
+
+::: {.alert .alert-primary}
+## Use case {-}
+
+The **ascertainment of cases in an outbreak is not perfect**.
+We want to estimate the proportion of cases being ascertained given case and death data.
+:::
+
+::: {.alert .alert-secondary}
+### What we have {-}
+
+* A time-series of cases and deaths, (cases may be substituted by another indicator of infections over time);
+* Data on the distribution of delays, describing the probability an individual will die $t$ days after they were initially infected.
+:::
+
+```{r, message = FALSE, warning=FALSE, eval = TRUE}
+# load {cfr} and data packages
+library(cfr)
+
+# packages to wrangle and plot data
+library(dplyr)
+library(tidyr)
+library(purrr)
+library(scales)
+library(forcats)
+library(ggplot2)
+```
+
+## Ascertainment for the Covid-19 pandemic in the U.K.
+
+This example shows ascertainment ratio estimation using _cfr_ and data from the Covid-19 pandemic in the United Kingdom.
+
+We load example Covid-19 daily case and death data provided with the _cfr_ package as `covid_data`, and subset for the first six months of U.K. data.
+
+```{r}
+# get Covid data provided with the package
+data("covid_data")
+
+# filter for the U.K
+df_covid_uk <- filter(
+  covid_data,
+  country == "United Kingdom", date <= "2020-06-30"
+)
+
+# view the data format
+tail(df_covid_uk)
+```
+
+We obtain the appropriate distribution reported in @linton2020; this is a log-normal distribution with $\mu$ = 2.577 and $\sigma$ = 0.440.
+
+::: {.alert .alert-warning}
+**Note that** @linton2020 fitted a discretised lognormal distribution --- but we use a continuous distribution here as we do not expect this difference to bias the estimates excessively.
+See the [vignette on delay distributions](delay_distributions.html) for more on using discretised distributions with _cfr_.
+
+**Note that** we use the central estimates for each distribution parameter, and by ignoring uncertainty in these parameters the uncertainty in the resulting CFR is likely to be underestimated. 
+:::
+
+### Estimating the proportion of cases that have been ascertained
+
+We use the `estimate_ascertainment()` function to calculate the static CFR (internally), and the overall ascertainment for the Covid-19 pandemic in the U.K.
+
+We assume that the "true" CFR of Covid-19 is 0.014 (i.e. 1.4%) [@verity2020].
+Future plans for this package include ability to incorporate uncertainty in CFR estimates when calculating under-ascertainment.
+
+::: {.alert .alert-info}
+**Note that** the CFR from @verity2020 is based on lab-confirmed and clinically diagnosed cases from Wuhan, China.
+Since the case definition for the U.K. is different from that used here, the ascertainment ratio estimated is likely to be biased.
+
+Furthermore, by ignoring uncertainty in this estimate, the ascertainment ratio is likely to be over-precise as well.
+:::
+
+```{r }
+# static ascertainment on data
+estimate_ascertainment(
+  data = df_covid_uk,
+  delay_density = function(x) dlnorm(x, meanlog = 2.577, sdlog = 0.440),
+  severity_baseline = 0.014
+)
+```
+
+## Ascertainment in countries with large early Covid-19 pandemics
+
+Finally, we estimate ascertainment for all countries with at least 100,000 reported Covid-19 deaths between 2020 and 2023, and focus on the period between the start of each outbreak to the 1st of June 2020.
+
+We now use the larger dataset `covid_data` made available with the _cfr_ package.
+We exclude four countries which only provide weekly data (with zeros for dates in between), and plot the ascertainment for each country remaining.
+
+```{r warning=FALSE}
+# countries with weekly reporting
+weekly_reporting <- c("France", "Germany", "Spain", "Ukraine")
+
+# subset for early covid outbreaks
+covid_data_early <- filter(
+  covid_data, date < "2020-06-01",
+  !country %in% weekly_reporting
+)
+
+# nest the data
+df_reporting <- nest(covid_data_early, .by = country)
+
+# define density function
+delay_density <- function(x) dlnorm(x, meanlog = 2.577, sdlog = 0.440)
+
+# calculate the reporting rate in each country using
+# map on nested dataframes
+df_reporting <- mutate(
+  df_reporting,
+  reporting = map(
+    .x = data, .f = estimate_ascertainment,
+    # arguments to function
+    severity_baseline = 0.014,
+    delay_density = delay_density
+  )
+)
+
+# unnest the data
+df_reporting <- unnest(df_reporting, cols = "reporting")
+
+# visualise the data
+head(df_reporting)
+```
+
+```{r fig.cap = "Example plot of the ascertainment ratio by country during the early stages of the Covid-19 pandemic.", class.source = 'fold-hide'}
+df_reporting %>%
+  ggplot() +
+  geom_pointrange(
+    aes(
+      x = fct_reorder(country, ascertainment_mean),
+      y = ascertainment_mean,
+      ymin = ascertainment_low,
+      ymax = ascertainment_high
+    )
+  ) +
+  coord_flip() +
+  labs(x = NULL, y = "Ascertainment ratio") +
+  theme(legend.position = "none") +
+  scale_y_continuous(
+    labels = percent, limits = c(0, 1)
+  ) +
+  theme_classic() +
+  theme(legend.position = "top")
+```
+
+## References

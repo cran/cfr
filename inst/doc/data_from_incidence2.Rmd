@@ -1,0 +1,73 @@
+---
+title: "Handling data from {incidence2}"
+output:
+  bookdown::html_vignette2:
+    fig_caption: yes
+    code_folding: show
+pkgdown:
+  as_is: true
+vignette: >
+  %\VignetteIndexEntry{Handling data from {incidence2}}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This vignette shows how to prepare `<incidence2>` objects from the [_incidence2_ package](https://www.reconverse.org/incidence2/) for use with _cfr_, using the `prepare_data()` method for the `<incidence2>` class. If detailed individual-level data are available that include deaths and recoveries, then alternative methods for severity estimation could be used (e.g. directly calculating CFR from the subset cases with a known death outcome). However, there may be situations where only deaths are recorded, in which case the methods described here would provide an option for CFR calculation.
+
+We first load the libraries we require, including _cfr_, _incidence2_, [_outbreaks_](https://www.reconverse.org/outbreaks/) for linelist data from a simulated ebola outbreak.
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(cfr)
+
+# load {incidence2}
+library(incidence2)
+```
+
+Aggregated case data such as the Covid-19 dataset provided by _incidence2_ can be converted into an `<incidence2>` object using `incidence2::incidence()`, and then handled by `prepare_data()`.
+
+```{r}
+# get data bundled with the {incidence2} package
+covid_uk <- covidregionaldataUK
+
+# view the data
+head(covid_uk)
+```
+
+::: {.alert .alert-secondary}
+**Note that** the grouping structure of this dataset given by the "region" variable is present in the `<incidence2>` object.
+`prepare_data()` respects grouping structure when present, and returns a dataset with one additional column for each grouping variable.
+:::
+
+```{r}
+# convert to incidence2 object
+covid_uk_incidence <- incidence(
+  covid_uk,
+  date_index = "date",
+  groups = "region",
+  counts = c("cases_new", "deaths_new"),
+  count_names_to = "count_variable"
+)
+
+# View head of prepared data with NAs retained
+# Note that this will cause issues with CFR functions such as cfr_static()
+head(
+  prepare_data(
+    covid_uk_incidence,
+    cases_variable = "cases_new",
+    deaths_variable = "deaths_new"
+  )
+)
+```
+
+In this example, the "region" column is added to the data, allowing for disease severity to be calculated separately for each region if needed.
+
+Users who wish to override grouping variables in their data are advised to do this when converting their data into an `<incidence2>` object, and to be aware of how _incidence2_ aggregates case and death counts, including how it deals with `NA`s; see `incidence2::incidence()` for more details.
+
+Users who prepare data while maintaining grouping structure should take care to apply `cfr_*()` to their data by group, as `cfr_*()` functions cannot currently handle grouped data.

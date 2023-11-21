@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>A primer on working with delay distributions</title>
+
+<style type="text/css">detaiks.chunk-details > summary.chunk-summary {
+text-align: right;
+}
+details.chunk-details[open] > summary.chunk-summary::after {
+content: "Hide";
+}
+details.chunk-details[open] > summary.chunk-summary > span.chunk-summary-text {
+display: none;
+}
+</style>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">
+
+div.csl-bib-body { }
+div.csl-entry {
+clear: both;
+}
+.hanging div.csl-entry {
+margin-left:2em;
+text-indent:-2em;
+}
+div.csl-left-margin {
+min-width:2em;
+float:left;
+}
+div.csl-right-inline {
+margin-left:2em;
+padding-left:1em;
+}
+div.csl-indent {
+margin-left: 2em;
+}
+</style>
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">A primer on working with delay distributions</h1>
+
+
+
+<p>This vignette is intended to be guidance for working with probability distributions in R in the context of using delay distributions with <em>cfr</em> to obtain delay-corrected estimates of disease severity.</p>
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># load necessary packages</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(cfr)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co"># some distribution packages</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">library</span>(distributional)</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="fu">library</span>(distcrete)</span></code></pre></div>
+</details>
+<div id="a-brief-primer-on-distributions-in-r" class="section level2">
+<h2>A brief primer on distributions in R</h2>
+<p>R and its extension packages provide rich and extensive support for representing and working with probability distributions, and this can be seen from the <a href="https://cran.r-project.org/view=Distributions">CRAN probability distributions task view</a>.</p>
+<p>Users might already be familiar with some distributions and their related functionality — such as the probability density function, or random number generation — provided in the <em>stats</em> package which is loaded when R is started.</p>
+<p>For example, the Gamma distribution’s probability density function (PDF) is represented by <code>stats::dgamma()</code>.</p>
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># the probability density function at `x` for a Gamma distribution</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">dgamma</span>(<span class="at">x =</span> <span class="fu">seq</span>(<span class="dv">10</span>), <span class="at">shape =</span> <span class="dv">5</span>, <span class="at">rate =</span> <span class="dv">1</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co">#&gt;  [1] 0.01532831 0.09022352 0.16803136 0.19536681 0.17546737 0.13385262</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co">#&gt;  [7] 0.09122619 0.05725229 0.03373716 0.01891664</span></span></code></pre></div>
+</details>
+</div>
+<div id="using-delay-distribution-densities-in-cfr" class="section level2">
+<h2>Using delay distribution densities in <em>cfr</em></h2>
+<p>To correct for reporting delays in disease severity estimation, we are primarily interested in the PDF or PMF (probability mass function) of the distribution of reporting delays between cases and known outcomes.</p>
+<p>We refer to the <em>R functions providing</em> both the PDF and PMF as the <em>density</em> of the distribution.</p>
+<p>The delay distribution density must be passed to functions such as <code>cfr_static()</code>, <code>cfr_time_varying()</code>, or <code>estimate_ascertainment()</code> via the <code>delay_density</code> argument. This can be represented in pseudo-code as</p>
+<pre><code>cfr_*(data, delay_density = &lt;DENSITY_FUNCTION&gt;)</code></pre>
+</div>
+<div id="preparing-delay-distribution-density-for-cfr" class="section level2">
+<h2>Preparing delay distribution density for <em>cfr</em></h2>
+<p><em>Importantly</em>, the <em>cfr</em> functions must receive the delay density in such a way that the density can be calculated over a flexible number of values (the sequence of days in the outbreak data).</p>
+<p>For example, by wrapping the density function for a Gamma distribution within another function which fixes the distribution parameters and accepts a vector of numbers, it can be evaluated at any set of values specified by the vector.</p>
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># wrap stats::dgamma() in a function</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co"># the Gamma distribution parameters are contained within dens_gamma()</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>dens_gamma <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  stats<span class="sc">::</span><span class="fu">dgamma</span>(<span class="at">x =</span> x, <span class="at">shape =</span> <span class="dv">5</span>, <span class="at">scale =</span> <span class="dv">1</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>}</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co"># check over a vector of `x`</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="fu">dens_gamma</span>(<span class="at">x =</span> <span class="fu">seq</span>(<span class="dv">10</span>))</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt;  [1] 0.01532831 0.09022352 0.16803136 0.19536681 0.17546737 0.13385262</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co">#&gt;  [7] 0.09122619 0.05725229 0.03373716 0.01891664</span></span></code></pre></div>
+</details>
+<div class="alert alert-info">
+<p>More information on working with functions, and especially anonymous functions, can be found in the <a href="https://adv-r.hadley.nz/fp.html">chapter on Functional Programming in <em>Advanced R</em></a>.
+Users working with R &gt; 4.1.0 can also use the new syntax for anonymous functions, e.g. <code>\(x) stats::dgamma(x, shape, scale)</code>.</p>
+</div>
+<div class="alert alert-warning">
+<p><strong>Note that</strong> we use the central estimates for each distribution parameter, and by ignoring uncertainty in these parameters the uncertainty in the resulting CFR is likely to be underestimated.</p>
+</div>
+</div>
+<div id="passing-delay-distribution-density-to-cfr-functions" class="section level2">
+<h2>Passing delay distribution density to <em>cfr</em> functions</h2>
+<p>delay distribution density functions can be passed, as anonymous functions, to <em>cfr</em> functions as shown with the example data provided with the package <span class="citation">Camacho et al. (<a href="#ref-camacho2014">2014</a>)</span>.
+Parameters for the onset-to-death distribution of Ebola virus disease are taken from <span class="citation">Barry et al. (<a href="#ref-barry2018">2018</a>)</span>.</p>
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># load package data</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;ebola1976&quot;</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co"># pass function wrapping dgamma to cfr_static()</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="fu">cfr_static</span>(</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>  <span class="at">data =</span> ebola1976,</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>  <span class="at">delay_density =</span> <span class="cf">function</span>(x) <span class="fu">dgamma</span>(x, <span class="at">shape =</span> <span class="fl">2.40</span>, <span class="at">scale =</span> <span class="fl">3.33</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>)</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="co">#&gt;   severity_mean severity_low severity_high</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="co">#&gt; 1         0.959        0.842             1</span></span></code></pre></div>
+</details>
+</div>
+<div id="using-other-distribution-representations" class="section level2">
+<h2>Using other distribution representations</h2>
+<p>While many R packages provide support for representing probability distributions, we focus on two examples, <a href="https://cran.r-project.org/package=distributional"><em>distributional</em></a> and <a href="https://cran.r-project.org/package=distcrete"><em>distcrete</em></a>, to show how closures wrapping these could be implemented, while wrapping the parameters from <span class="citation">Barry et al. (<a href="#ref-barry2018">2018</a>)</span>.</p>
+<p>Users may wish to use these or similar packages for better management of distributions and parameters.
+See the <a href="https://cran.r-project.org/view=Distributions">CRAN probability distributions task view</a> for more information on distribution packages suitable for different use cases.</p>
+<div id="using-distributional" class="section level3">
+<h3>Using <em>distributional</em></h3>
+<p><strong>Note that</strong> the output of <code>density(&lt;distribution&gt;, x)</code> is a list containing a vector.</p>
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># using {distributional} and parameters from Barry et al. 2018</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>dist_onset_to_death_ebola <span class="ot">&lt;-</span> <span class="fu">dist_gamma</span>(<span class="at">shape =</span> <span class="fl">2.40</span>, <span class="at">rate =</span> <span class="fl">1.0</span> <span class="sc">/</span> <span class="fl">3.33</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co"># wrap function and pass it to cfr_static()</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co"># unlist() required as density(&lt;distribution&gt;, x) is a list</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="fu">cfr_static</span>(</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>  <span class="at">data =</span> ebola1976,</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>  <span class="at">delay_density =</span> <span class="cf">function</span>(x) <span class="fu">unlist</span>(<span class="fu">density</span>(dist_onset_to_death_ebola, x))</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>)</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="co">#&gt;   severity_mean severity_low severity_high</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt; 1         0.959        0.842             1</span></span></code></pre></div>
+</details>
+</div>
+<div id="using-distcrete" class="section level3">
+<h3>Using <em>distcrete</em></h3>
+<p>The <em>distcrete</em> package provides support for discretised distributions.
+Here, we show an example for the discretised Gamma distribution.
+<strong>Note that</strong> the density function for <code>&lt;distcrete&gt;</code> objects is encapsulated, and can be passed directly to the <code>delay_density</code> argument.</p>
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># using {distcrete} and parameters from Barry et al. 2018</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>dist_onset_to_death_ebola <span class="ot">&lt;-</span> <span class="fu">distcrete</span>(</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">&quot;gamma&quot;</span>, <span class="at">shape =</span> <span class="fl">2.40</span>, <span class="at">scale =</span> <span class="fl">3.33</span>, <span class="at">interval =</span> <span class="dv">1</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>)</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="co"># pass density function to cfr_static()</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="fu">cfr_static</span>(</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>  <span class="at">data =</span> ebola1976,</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>  <span class="at">delay_density =</span> dist_onset_to_death_ebola<span class="sc">$</span>d</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>)</span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co">#&gt;   severity_mean severity_low severity_high</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co">#&gt; 1         0.959        0.842             1</span></span></code></pre></div>
+</details>
+<div class="alert alert-warning">
+<p><strong>Note that</strong> discretised distributions are the more appropriate choice to be passed to <code>cfr_*()</code>, as we are usually working with daily case and death data.
+We do use continuous distributions in many examples as we do not expect this difference to bias the estimates excessively.</p>
+</div>
+</div>
+</div>
+<div id="links-to-epiparameter" class="section level2">
+<h2>Links to <em>epiparameter</em></h2>
+<p>While users can pass functions from <em>stats</em>, and can manage distribution parameters using specialised packages and classes, it may be convenient to be able to access parameters reported in the epidemiological literature from a curated library.</p>
+<p>The forthcoming <a href="https://epiverse-trace.github.io/epiparameter/"><em>epiparameter</em> package</a> aims to be such a library of epidemiological delay distributions.
+The dedicated <code>&lt;epidist&gt;</code> class is expected to have similar functionality to other distribution classes, allowing easy definition of density functions that can be passed to <em>cfr</em>.</p>
+<p>The pseudo-code below shows how this might work.</p>
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># </span><span class="al">NOTE</span><span class="co">: this is pseudo-code</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>EPIDIST_OBJECT <span class="ot">&lt;-</span> <span class="fu">ACCESS_DISTRIBUTION</span>(disease, study)</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>cfr_<span class="sc">*</span>(<span class="at">data =</span> data, <span class="at">delay_density =</span> <span class="cf">function</span>(x) <span class="fu">density</span>(<span class="sc">&lt;</span>EPIDIST_OBJECT<span class="sc">&gt;</span> x))</span></code></pre></div>
+</details>
+</div>
+<div id="references" class="section level2 unnumbered">
+<h2>References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-barry2018" class="csl-entry">
+Barry, Ahmadou, Steve Ahuka-Mundeke, Yahaya Ali Ahmed, Yokouide Allarangar, Julienne Anoko, Brett Nicholas Archer, Aaron Aruna Abedi, et al. 2018. <span>“Outbreak of Ebola virus disease in the Democratic Republic of the Congo, April–May, 2018: an epidemiological study.”</span> <em>The Lancet</em> 392 (10143): 213–21. <a href="https://doi.org/10.1016/S0140-6736(18)31387-4">https://doi.org/10.1016/S0140-6736(18)31387-4</a>.
+</div>
+<div id="ref-camacho2014" class="csl-entry">
+Camacho, A., A. J. Kucharski, S. Funk, J. Breman, P. Piot, and W. J. Edmunds. 2014. <span>“Potential for Large Outbreaks of Ebola Virus Disease.”</span> <em>Epidemics</em> 9 (December): 70–78. <a href="https://doi.org/10.1016/j.epidem.2014.09.003">https://doi.org/10.1016/j.epidem.2014.09.003</a>.
+</div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
