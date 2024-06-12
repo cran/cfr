@@ -35,7 +35,9 @@ test_that("`cfr_rolling`: Basic expectations", {
   )
 
   # expected names
-  expected_names <- c("date", "severity_mean", "severity_low", "severity_high")
+  expected_names <- c(
+    "date", "severity_estimate", "severity_low", "severity_high"
+  )
   # expect named columns
   expect_named(
     rolling_scfr_naive,
@@ -158,13 +160,14 @@ test_that("cfr_rolling handles cumulative zeroes case", {
   data <- covid_data
   data <- data[data$country == "United Kingdom", ]
 
-  # naive estimate works
-  expect_no_condition(
-    cfr_rolling(data)
+  # naive estimate works, expect message but no warnings
+  expect_message(
+    cfr_rolling(data),
+    regexp = "(is a convenience function)*(cfr_time_varying)*(instead)"
   )
 
   # corrected estimate works
-  expect_no_condition(
+  expect_no_warning(
     cfr_rolling(
       data,
       delay_density = function(x) dlnorm(x, meanlog = 2.577, sdlog = 0.440)
@@ -179,7 +182,7 @@ test_that("cfr_rolling handles cumulative zeroes case", {
   cfr_estimate <- cfr_rolling(data)
 
   expect_identical(
-    which.min(is.na(cfr_estimate$severity_mean)),
+    which.min(is.na(cfr_estimate$severity_estimate)),
     n_nas
   )
 })

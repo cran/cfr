@@ -5,16 +5,17 @@
 
 <!-- badges: start -->
 
+<a href="https://app.digitalpublicgoods.net/a/11092"><img src="https://digitalpublicgoods.net/registry/dpgicon.svg" alt="Digital Public Good" height="25">
 [![License:
-MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/license/mit/)
+MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/license/mit)
 [![R-CMD-check](https://github.com/epiverse-trace/cfr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/epiverse-trace/cfr/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/epiverse-trace/cfr/branch/main/graph/badge.svg)](https://app.codecov.io/gh/epiverse-trace/cfr?branch=main)
 [![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
-[![Project Status: WIP – Initial development is in progress, but there
-has not yet been a stable, usable release suitable for the
-public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+[![Project Status: Active – The project has reached a stable, usable
+state and is being actively
+developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/cfr)](https://CRAN.R-project.org/package=cfr)
 <!-- badges: end -->
@@ -70,20 +71,23 @@ of 3.33.
 library(cfr)
 
 # Load the Ebola 1976 data provided with the package
-data("ebola1976")
+data(ebola1976)
 
 # Calculate the static CFR without correcting for delays
 cfr_static(data = ebola1976)
-#>   severity_mean severity_low severity_high
-#> 1      0.955102    0.9210866     0.9773771
+#>   severity_estimate severity_low severity_high
+#> 1          0.955102    0.9210866     0.9773771
+```
+
+``` r
 
 # Calculate the static CFR while correcting for delays
 cfr_static(
   data = ebola1976,
   delay_density = function(x) dgamma(x, shape = 2.40, scale = 3.33)
 )
-#>   severity_mean severity_low severity_high
-#> 1         0.959        0.842             1
+#>   severity_estimate severity_low severity_high
+#> 1            0.9742       0.8356        0.9877
 ```
 
 ### Change in real-time estimates of overall severity during the 1976 Ebola outbreak
@@ -107,13 +111,16 @@ rolling_cfr_naive <- cfr_rolling(
 
 # see the first few rows
 head(rolling_cfr_naive)
-#>         date severity_mean severity_low severity_high
-#> 1 1976-08-25             0            0         0.975
-#> 2 1976-08-26             0            0         0.975
-#> 3 1976-08-27             0            0         0.975
-#> 4 1976-08-28             0            0         0.975
-#> 5 1976-08-29             0            0         0.975
-#> 6 1976-08-30             0            0         0.975
+#>         date severity_estimate severity_low severity_high
+#> 1 1976-08-25                 0            0         0.975
+#> 2 1976-08-26                 0            0         0.975
+#> 3 1976-08-27                 0            0         0.975
+#> 4 1976-08-28                 0            0         0.975
+#> 5 1976-08-29                 0            0         0.975
+#> 6 1976-08-30                 0            0         0.975
+```
+
+``` r
 
 # Calculate the rolling daily CFR while correcting for delays
 rolling_cfr_corrected <- cfr_rolling(
@@ -122,13 +129,13 @@ rolling_cfr_corrected <- cfr_rolling(
 )
 
 head(rolling_cfr_corrected)
-#>         date severity_mean severity_low severity_high
-#> 1 1976-08-25            NA           NA            NA
-#> 2 1976-08-26         0.001        0.001         0.999
-#> 3 1976-08-27         0.001        0.001         0.999
-#> 4 1976-08-28         0.001        0.001         0.999
-#> 5 1976-08-29         0.001        0.001         0.999
-#> 6 1976-08-30         0.001        0.001         0.994
+#>         date severity_estimate severity_low severity_high
+#> 1 1976-08-25                NA           NA            NA
+#> 2 1976-08-26             1e-04        1e-04        0.9999
+#> 3 1976-08-27             1e-04        1e-04        0.9999
+#> 4 1976-08-28             1e-04        1e-04        0.9999
+#> 5 1976-08-29             1e-04        1e-04        0.9990
+#> 6 1976-08-30             1e-04        1e-04        0.9942
 ```
 
 We plot the rolling CFR to visualise how severity changes over time,
@@ -148,7 +155,7 @@ data_cfr <- rbind(
 
 <div class="figure">
 
-<img src="man/figures/README-unnamed-chunk-3-1.png" alt="Disease severity of ebola in the 1976 outbreak estimated on each day of the epidemic. The rolling CFR value converges to the static value towards the end of the outbreak. Both corrected and uncorrected estimates are shown." width="100%" />
+<img src="man/figures/README-fig-rolling-cfr-ebola-1.png" alt="Disease severity of ebola in the 1976 outbreak estimated on each day of the epidemic. The rolling CFR value converges to the static value towards the end of the outbreak. Both corrected and uncorrected estimates are shown." width="100%" />
 <p class="caption">
 Disease severity of ebola in the 1976 outbreak estimated on each day of
 the epidemic. The rolling CFR value converges to the static value
@@ -187,13 +194,22 @@ By contributing to this project, you agree to abide by its terms.
 *cfr* functionality overlaps with that of some other packages, including
 
 - [*coarseDataTools*](https://cran.r-project.org/package=coarseDataTools)
-  is an R package that also allows estimation of case fatality risk
-  while accounting for delays due to survival time. *cfr* uses simpler
-  methods from Nishiura et al. ([2009](#ref-nishiura2009)) to correct
-  for under-ascertainment and a simpler likelihood calculation.
+  is an R package that allows estimation of relative case fatality risk
+  between covariate groups while accounting for delays due to survival
+  time, when numbers of deaths and recoveries over time are known. *cfr*
+  uses simpler methods from Nishiura et al. ([2009](#ref-nishiura2009))
+  that can be applied when only cases and deaths over time are known,
+  generating estimates based on all data to date, as well as
+  time-varying estimates. *cfr* can also convert estimates of cases with
+  known outcomes over time into an estimate of under-ascertainment, if a
+  baseline estimate of fatality risk is available from the literature
+  (e.g. from past outbreaks).
 - [*EpiNow2*](https://cran.r-project.org/package=EpiNow2) is an R
-  package that allows estimation of case fatality risk as a secondary
-  observation of cases, but is a more complex package to use.
+  package that can allow estimation of case fatality risk if it is
+  defined as a secondary observation of cases. In particular, it allows
+  for estimation that accounts for the smooth underlying epidemic
+  process, but this requires additional computational effort. A
+  comparison of these methods is planned for a future release.
 
 *cfr* is in future expected to benefit from the functionality of the
 forthcoming [*epiparameter*
@@ -205,7 +221,8 @@ these parameters for delay correction.
 
 ## References
 
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent"
+entry-spacing="0">
 
 <div id="ref-barry2018" class="csl-entry">
 

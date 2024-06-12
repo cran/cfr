@@ -62,7 +62,7 @@ ggplot(df_covid_cfr_uk) +
   ) +
   geom_line(
     aes(
-      x = date, y = severity_mean, colour = method
+      x = date, y = severity_estimate, colour = method
     )
   ) +
   scale_x_date(
@@ -136,7 +136,7 @@ filter(df_covid_cfr, country %in% c("Brazil", "India", "United States")) %>%
   ) +
   geom_line(
     aes(
-      x = date, y = severity_mean, colour = country
+      x = date, y = severity_estimate, colour = country
     )
   ) +
   scale_x_date(

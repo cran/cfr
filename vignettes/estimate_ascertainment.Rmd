@@ -63,6 +63,13 @@ library(forcats)
 library(ggplot2)
 ```
 
+::: {.alert .alert-info}
+
+**Note that** `estimate_static()` is used to generate a severity estimate which is compared against a 'known' severity estimate to calculate the ascertainment ratio.
+See the [vignette on static severity estimation](estimate_static_severity.html) to learn more about how `estimate_static()` chooses a method for profile likelihood generation and hence CFR estimation.
+
+:::
+
 ## Ascertainment for the Covid-19 pandemic in the U.K.
 
 This example shows ascertainment ratio estimation using _cfr_ and data from the Covid-19 pandemic in the United Kingdom.
@@ -86,8 +93,8 @@ tail(df_covid_uk)
 We obtain the appropriate distribution reported in @linton2020; this is a log-normal distribution with $\mu$ = 2.577 and $\sigma$ = 0.440.
 
 ::: {.alert .alert-warning}
-**Note that** @linton2020 fitted a discretised lognormal distribution --- but we use a continuous distribution here as we do not expect this difference to bias the estimates excessively.
-See the [vignette on delay distributions](delay_distributions.html) for more on using discretised distributions with _cfr_.
+**Note that** @linton2020 fitted a discrete lognormal distribution --- but we use a continuous distribution here.
+See the [vignette on delay distributions](delay_distributions.html) for more on when using a continuous instead of discrete distribution is acceptable, and on using discrete distributions with _cfr_.
 
 **Note that** we use the central estimates for each distribution parameter, and by ignoring uncertainty in these parameters the uncertainty in the resulting CFR is likely to be underestimated. 
 :::
@@ -162,8 +169,8 @@ df_reporting %>%
   ggplot() +
   geom_pointrange(
     aes(
-      x = fct_reorder(country, ascertainment_mean),
-      y = ascertainment_mean,
+      x = fct_reorder(country, ascertainment_estimate),
+      y = ascertainment_estimate,
       ymin = ascertainment_low,
       ymax = ascertainment_high
     )

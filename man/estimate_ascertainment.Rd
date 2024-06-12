@@ -36,8 +36,8 @@ density at user-specified values, e.g.
 \value{
 A \verb{<data.frame>} containing the maximum likelihood estimate estimate
 and 95\% confidence interval of the corrected severity, named
-"ascertainment_mean" (for the central estimate), and "ascertainment_low" and
-"ascertainment_high" for the lower and upper interval limits.
+"ascertainment_estimate" (for the central estimate), and "ascertainment_low"
+and "ascertainment_high" for the lower and upper interval limits.
 }
 \description{
 Estimates the proportion of cases or infections that have been
@@ -45,6 +45,15 @@ ascertained, given a time-series of cases and deaths, a delay distribution
 and a baseline severity estimate. The resulting ascertainment estimate is
 calculated as the ratio of the baseline severity estimate, which is assumed
 to be the 'true' disease severity, and the delay-adjusted severity estimate.
+}
+\details{
+\code{estimate_ascertainment()} uses \code{\link[=cfr_static]{cfr_static()}} internally to obtain a
+severity estimate that is compared against the user-specified baseline
+severity. The profile likelihood method used to obtain the severity estimate
+is decided by the internal function \code{.estimate_severity()} as used in
+\code{\link[=cfr_static]{cfr_static()}}, when delay correction is applied. See the \code{\link[=cfr_static]{cfr_static()}}
+documentation for an explanation of the methods used depending on outbreak
+size and initial severity guess.
 }
 \examples{
 # get data pre-loaded with the package

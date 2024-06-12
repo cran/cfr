@@ -26,8 +26,8 @@
 #'
 #' @return A `<data.frame>` with the date, maximum likelihood estimate and 95%
 #' confidence interval of the daily severity estimates, named
-#' "severity_mean", "severity_low", and "severity_high", with one row for each
-#' day in the original data.frame.
+#' "severity_estimate", "severity_low", and "severity_high", with one row for
+#' each day in the original data.frame.
 #'
 #' @details
 #' # Details: Adjusting for delays between two time series
@@ -48,11 +48,11 @@
 #' for each \eqn{t}, where \eqn{\theta} represents the severity measure of
 #' interest.
 #'
-#' The epidemiological delay distribution passed to `epidist` is used to obtain
-#' a probability mass function parameterised by time; i.e. \eqn{f(t)} which
-#' gives the probability a case has a known outcomes (usually, death) at time
-#' \eqn{t}, parameterised with disease-specific parameters before it is supplied
-#' here.
+#' The epidemiological delay distribution passed to `delay_density` is used to
+#' obtain a probability mass function parameterised by time; i.e. \eqn{f(t)}
+#' which gives the probability of the binary outcome of a case (survival or
+#' death) being known by time \eqn{t}. The delay distribution is parameterised
+#' with disease-specific parameters before it is supplied here.
 #'
 #' **Note** that the function arguments `burn_in` and `smoothing_window` are not
 #' explicitly used in this calculation. `burn_in` controls how many estimates at
@@ -161,7 +161,7 @@ cfr_time_varying <- function(data,
   # assign columns for severity estimate and intervals
   severity_estimates <- matrix(
     data = NA_real_, nrow = nrow(data), ncol = 3,
-    dimnames = list(NULL, sprintf("severity_%s", c("mean", "low", "high")))
+    dimnames = list(NULL, sprintf("severity_%s", c("estimate", "low", "high")))
   )
 
   # calculation of indices to modify
@@ -212,6 +212,6 @@ cfr_time_varying <- function(data,
 
   # return severity estimate with names in correct order
   severity_estimates[, c(
-    "date", "severity_mean", "severity_low", "severity_high"
+    "date", "severity_estimate", "severity_low", "severity_high"
   )]
 }

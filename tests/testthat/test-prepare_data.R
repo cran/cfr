@@ -1,11 +1,15 @@
 # Tests for the prepare_data() generic and incidence2 method
 test_that("Prepare `<incidence2>` data, basic expectations", {
   # convert to incidence2 object
-  covid_uk_incidence <- incidence2::incidence(
-    incidence2::covidregionaldataUK,
-    date_index = "date",
-    counts = c("cases_new", "deaths_new"),
-    count_names_to = "count_variable"
+  # suppress warnings for NAs from incidence2 v2.3.0 as this is what is
+  # tested below
+  suppressWarnings(
+    covid_uk_incidence <- incidence2::incidence(
+      incidence2::covidregionaldataUK,
+      date_index = "date",
+      counts = c("cases_new", "deaths_new"),
+      count_names_to = "count_variable"
+    )
   )
 
   expect_message(
@@ -61,16 +65,20 @@ test_that("Prepare `<incidence2>` data, basic expectations", {
 
 test_that("Prepare <incidence2> fails if <incidence2> not available", {
   # load some data
-  covid_uk_incidence <- incidence2::incidence(
-    incidence2::covidregionaldataUK,
-    date_index = "date",
-    counts = c("cases_new", "deaths_new"),
-    count_names_to = "count_variable"
+  # suppress warnings for NAs from incidence2 v2.3.0 as this is not relevant
+  # to the test
+  suppressWarnings(
+    covid_uk_incidence <- incidence2::incidence(
+      incidence2::covidregionaldataUK,
+      date_index = "date",
+      counts = c("cases_new", "deaths_new"),
+      count_names_to = "count_variable"
+    )
   )
 
   # mock .is_pkg_installed() to return FALSE simulating incidence2 not installed
   # this test adapted from
-  # https://community.rstudio.com/t/how-can-i-make-testthat-think-i-dont-have-a-package-installed/33441 # nolint line_length_linter
+  # https://community.rstudio.com/t/how-can-i-make-testthat-think-i-dont-have-a-package-installed/33441
   with_mocked_bindings(
     .is_pkg_installed = function(x) FALSE,
     code = expect_error(
@@ -97,12 +105,15 @@ test_that("Data preparation errors for data.frame method", {
 
 test_that("Prepare grouped `<incidence2>` data", {
   grouping_variable <- "region"
-  data <- incidence2::incidence(
-    incidence2::covidregionaldataUK,
-    date_index = "date",
-    counts = c("cases_new", "deaths_new"),
-    count_names_to = "count_variable",
-    groups = grouping_variable
+  # suppress warnings for NAs from incidence2 v2.3.0 as filling is tested here
+  suppressWarnings(
+    data <- incidence2::incidence(
+      incidence2::covidregionaldataUK,
+      date_index = "date",
+      counts = c("cases_new", "deaths_new"),
+      count_names_to = "count_variable",
+      groups = grouping_variable
+    )
   )
 
   expect_no_condition(

@@ -54,8 +54,8 @@ argument is 1.}
 \value{
 A \verb{<data.frame>} with the date, maximum likelihood estimate and 95\%
 confidence interval of the daily severity estimates, named
-"severity_mean", "severity_low", and "severity_high", with one row for each
-day in the original data.frame.
+"severity_estimate", "severity_low", and "severity_high", with one row for
+each day in the original data.frame.
 }
 \description{
 Calculates how the severity of a disease changes over time
@@ -80,11 +80,11 @@ We use maximum likelihood estimation to determine the value of \eqn{\theta_t}
 for each \eqn{t}, where \eqn{\theta} represents the severity measure of
 interest.
 
-The epidemiological delay distribution passed to \code{epidist} is used to obtain
-a probability mass function parameterised by time; i.e. \eqn{f(t)} which
-gives the probability a case has a known outcomes (usually, death) at time
-\eqn{t}, parameterised with disease-specific parameters before it is supplied
-here.
+The epidemiological delay distribution passed to \code{delay_density} is used to
+obtain a probability mass function parameterised by time; i.e. \eqn{f(t)}
+which gives the probability of the binary outcome of a case (survival or
+death) being known by time \eqn{t}. The delay distribution is parameterised
+with disease-specific parameters before it is supplied here.
 
 \strong{Note} that the function arguments \code{burn_in} and \code{smoothing_window} are not
 explicitly used in this calculation. \code{burn_in} controls how many estimates at

@@ -424,8 +424,9 @@ Parameters for the onset-to-death distribution of Ebola virus disease are taken 
 <span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>  <span class="at">data =</span> ebola1976,</span>
 <span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>  <span class="at">delay_density =</span> <span class="cf">function</span>(x) <span class="fu">dgamma</span>(x, <span class="at">shape =</span> <span class="fl">2.40</span>, <span class="at">scale =</span> <span class="fl">3.33</span>)</span>
 <span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>)</span>
-<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="co">#&gt;   severity_mean severity_low severity_high</span></span>
-<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="co">#&gt; 1         0.959        0.842             1</span></span></code></pre></div>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="co">#&gt; Total cases = 245 and p = 0.959: using Normal approximation to binomial likelihood.</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="co">#&gt;   severity_estimate severity_low severity_high</span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="co">#&gt; 1            0.9742       0.8356        0.9877</span></span></code></pre></div>
 </details>
 </div>
 <div id="using-other-distribution-representations" class="section level2">
@@ -446,14 +447,15 @@ See the <a href="https://cran.r-project.org/view=Distributions">CRAN probability
 <span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>  <span class="at">data =</span> ebola1976,</span>
 <span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>  <span class="at">delay_density =</span> <span class="cf">function</span>(x) <span class="fu">unlist</span>(<span class="fu">density</span>(dist_onset_to_death_ebola, x))</span>
 <span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>)</span>
-<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="co">#&gt;   severity_mean severity_low severity_high</span></span>
-<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt; 1         0.959        0.842             1</span></span></code></pre></div>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="co">#&gt; Total cases = 245 and p = 0.959: using Normal approximation to binomial likelihood.</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt;   severity_estimate severity_low severity_high</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co">#&gt; 1            0.9742       0.8356        0.9877</span></span></code></pre></div>
 </details>
 </div>
 <div id="using-distcrete" class="section level3">
 <h3>Using <em>distcrete</em></h3>
-<p>The <em>distcrete</em> package provides support for discretised distributions.
-Here, we show an example for the discretised Gamma distribution.
+<p>The <em>distcrete</em> package provides support for discrete distributions.
+Here, we show an example for the discrete Gamma distribution.
 <strong>Note that</strong> the density function for <code>&lt;distcrete&gt;</code> objects is encapsulated, and can be passed directly to the <code>delay_density</code> argument.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># using {distcrete} and parameters from Barry et al. 2018</span></span>
@@ -466,14 +468,19 @@ Here, we show an example for the discretised Gamma distribution.
 <span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>  <span class="at">data =</span> ebola1976,</span>
 <span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>  <span class="at">delay_density =</span> dist_onset_to_death_ebola<span class="sc">$</span>d</span>
 <span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>)</span>
-<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co">#&gt;   severity_mean severity_low severity_high</span></span>
-<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co">#&gt; 1         0.959        0.842             1</span></span></code></pre></div>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co">#&gt; Total cases = 245 and p = 0.959: using Normal approximation to binomial likelihood.</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co">#&gt;   severity_estimate severity_low severity_high</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="co">#&gt; 1            0.9742       0.8356        0.9877</span></span></code></pre></div>
 </details>
-<div class="alert alert-warning">
-<p><strong>Note that</strong> discretised distributions are the more appropriate choice to be passed to <code>cfr_*()</code>, as we are usually working with daily case and death data.
-We do use continuous distributions in many examples as we do not expect this difference to bias the estimates excessively.</p>
 </div>
 </div>
+<div id="using-continuous-and-discrete-distributions" class="section level2 alert alert-warning">
+<h2>Using continuous and discrete distributions</h2>
+<p><strong>Note that</strong> discrete distributions are the more appropriate choice to be passed to <code>cfr_*()</code>, as we are usually working with daily case and death data.</p>
+<p>We do use continuous distributions in many examples as onset-to-death delays are typically long with large variance.
+Evaluating the probability distribution function of such distributions at discrete points (here, days) is similar to evaluating the probability mass function of the equivalent discrete distribution.</p>
+<p>However, note that this assumption may not be appropriate for more strongly peaked distributions, i.e., where onset-to-death is strongly peaked with a low variance, as the difference between the PDF and PMF is likely to be larger on average (than for a more spread out distribution).</p>
+<p>Further, <em>cfr</em> functions tally estimated death counts (calculated by convolving cases and densities), so that any underestimates due to the PDF-PMF discrepancy at one end of the distribution help to cancel out overestimates at the end of the distribution.</p>
 </div>
 <div id="links-to-epiparameter" class="section level2">
 <h2>Links to <em>epiparameter</em></h2>
@@ -485,7 +492,7 @@ The dedicated <code>&lt;epidist&gt;</code> class is expected to have similar fun
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># </span><span class="al">NOTE</span><span class="co">: this is pseudo-code</span></span>
 <span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>EPIDIST_OBJECT <span class="ot">&lt;-</span> <span class="fu">ACCESS_DISTRIBUTION</span>(disease, study)</span>
 <span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a></span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>cfr_<span class="sc">*</span>(<span class="at">data =</span> data, <span class="at">delay_density =</span> <span class="cf">function</span>(x) <span class="fu">density</span>(<span class="sc">&lt;</span>EPIDIST_OBJECT<span class="sc">&gt;</span> x))</span></code></pre></div>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>cfr_<span class="sc">*</span>(<span class="at">data =</span> data, <span class="at">delay_density =</span> <span class="cf">function</span>(x) <span class="fu">density</span>(<span class="sc">&lt;</span>EPIDIST_OBJECT<span class="sc">&gt;</span>, x))</span></code></pre></div>
 </details>
 </div>
 <div id="references" class="section level2 unnumbered">

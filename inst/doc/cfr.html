@@ -415,7 +415,7 @@ See the <a href="data_from_incidence2.html">vignette on working with data from <
 <p>We obtain the disease’s onset-to-death distribution from a more recent Ebola outbreak, reported in <span class="citation">Barry et al. (<a href="#ref-barry2018">2018</a>)</span>.
 The onset-to-death distribution is considered to be Gamma distributed, with a shape <span class="math inline">\(k\)</span> = 2.40 and a scale of <span class="math inline">\(\theta\)</span> = 3.33.</p>
 <div class="alert alert-warning">
-<p><strong>Note that</strong> while we use a continuous distribution here, it is more appropriate to use a discretised distribution instead as we are working with daily data.</p>
+<p><strong>Note that</strong> while we use a continuous distribution here, it is more appropriate to use a discrete distribution instead as we are working with daily data.</p>
 <p><strong>Note also</strong> that we use the central estimates for each distribution parameter, and by ignoring uncertainty in these parameters the uncertainty in the resulting CFR is likely to be underestimated.</p>
 </div>
 <p>The forthcoming <a href="https://epiverse-trace.github.io/epiparameter/"><em>epiparameter</em> package</a> aims to be a library of epidemiological delay distributions, which can be accessed easily from within workflows.
@@ -429,8 +429,9 @@ See the <a href="delay_distributions.html">vignette on using delay distributions
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="at">data =</span> ebola1976,</span>
 <span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="at">delay_density =</span> <span class="cf">function</span>(x) <span class="fu">dgamma</span>(x, <span class="at">shape =</span> <span class="fl">2.40</span>, <span class="at">scale =</span> <span class="fl">3.33</span>)</span>
 <span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>)</span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt;   severity_mean severity_low severity_high</span></span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; 1         0.959        0.842             1</span></span></code></pre></div>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt; Total cases = 245 and p = 0.959: using Normal approximation to binomial likelihood.</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt;   severity_estimate severity_low severity_high</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt; 1            0.9742       0.8356        0.9877</span></span></code></pre></div>
 </details>
 <p>The <code>cfr_static()</code> function is well suited to small outbreaks where there are relatively few events and the time period under consideration if relatively brief, so the severity is unlikely to have changed over time.</p>
 <p>To understand how severity has changed over time (e.g. following vaccination or pathogen evolution), use the function <code>cfr_time_varying()</code>.
@@ -454,8 +455,9 @@ We use the onset-to-death distribution from <span class="citation">Barry et al. 
 <span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">delay_density =</span> <span class="cf">function</span>(x) <span class="fu">dgamma</span>(x, <span class="at">shape =</span> <span class="fl">2.40</span>, <span class="at">scale =</span> <span class="fl">3.33</span>),</span>
 <span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="at">severity_baseline =</span> <span class="fl">0.7</span></span>
 <span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>)</span>
-<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co">#&gt;   ascertainment_mean ascertainment_low ascertainment_high</span></span>
-<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co">#&gt; 1           0.729927               0.7          0.8313539</span></span></code></pre></div>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co">#&gt; Total cases = 245 and p = 0.959: using Normal approximation to binomial likelihood.</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co">#&gt;   ascertainment_estimate ascertainment_low ascertainment_high</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt; 1              0.7185383         0.7087172          0.8377214</span></span></code></pre></div>
 </details>
 <p>This analysis suggests that between 70% and 83% of cases were reported in this outbreak.</p>
 <p>More details can be found in the <a href="estimate_ascertainment.html">vignette on estimating the proportion of cases that are reported during an outbreak</a>.</p>
