@@ -1,6 +1,6 @@
 Package: cfr
 Title: Estimate Disease Severity and Case Ascertainment
-Version: 0.1.1
+Version: 0.1.2
 Authors@R: c(
     person("Pratik R.", "Gupte", , "pratik.gupte@lshtm.ac.uk", role = c("aut", "cph"),
            comment = c(ORCID = "0000-0001-5294-7819")),
@@ -41,7 +41,7 @@ Language: en-GB
 LazyData: true
 RoxygenNote: 7.3.1
 NeedsCompilation: no
-Packaged: 2024-06-12 11:32:48 UTC; lshpg6
+Packaged: 2024-09-26 09:33:10 UTC; akucharski
 Author: Pratik R. Gupte [aut, cph] (<https://orcid.org/0000-0001-5294-7819>),
   Adam Kucharski [aut, cph, cre]
     (<https://orcid.org/0000-0001-8814-9421>),
@@ -54,4 +54,4 @@ Author: Pratik R. Gupte [aut, cph] (<https://orcid.org/0000-0001-5294-7819>),
   Sebastian Funk [rev] (<https://orcid.org/0000-0002-2842-3406>)
 Maintainer: Adam Kucharski <adam.kucharski@lshtm.ac.uk>
 Repository: CRAN
-Date/Publication: 2024-06-12 21:10:03 UTC
+Date/Publication: 2024-09-26 09:50:02 UTC

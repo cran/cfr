@@ -424,9 +424,8 @@ Parameters for the onset-to-death distribution of Ebola virus disease are taken 
 <span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>  <span class="at">data =</span> ebola1976,</span>
 <span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>  <span class="at">delay_density =</span> <span class="cf">function</span>(x) <span class="fu">dgamma</span>(x, <span class="at">shape =</span> <span class="fl">2.40</span>, <span class="at">scale =</span> <span class="fl">3.33</span>)</span>
 <span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>)</span>
-<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="co">#&gt; Total cases = 245 and p = 0.959: using Normal approximation to binomial likelihood.</span></span>
-<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="co">#&gt;   severity_estimate severity_low severity_high</span></span>
-<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="co">#&gt; 1            0.9742       0.8356        0.9877</span></span></code></pre></div>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="co">#&gt;   severity_estimate severity_low severity_high</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="co">#&gt; 1            0.9592       0.9295        0.9793</span></span></code></pre></div>
 </details>
 </div>
 <div id="using-other-distribution-representations" class="section level2">
@@ -447,9 +446,8 @@ See the <a href="https://cran.r-project.org/view=Distributions">CRAN probability
 <span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>  <span class="at">data =</span> ebola1976,</span>
 <span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>  <span class="at">delay_density =</span> <span class="cf">function</span>(x) <span class="fu">unlist</span>(<span class="fu">density</span>(dist_onset_to_death_ebola, x))</span>
 <span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>)</span>
-<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="co">#&gt; Total cases = 245 and p = 0.959: using Normal approximation to binomial likelihood.</span></span>
-<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt;   severity_estimate severity_low severity_high</span></span>
-<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co">#&gt; 1            0.9742       0.8356        0.9877</span></span></code></pre></div>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="co">#&gt;   severity_estimate severity_low severity_high</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt; 1            0.9592       0.9295        0.9793</span></span></code></pre></div>
 </details>
 </div>
 <div id="using-distcrete" class="section level3">
@@ -468,9 +466,8 @@ Here, we show an example for the discrete Gamma distribution.
 <span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>  <span class="at">data =</span> ebola1976,</span>
 <span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>  <span class="at">delay_density =</span> dist_onset_to_death_ebola<span class="sc">$</span>d</span>
 <span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>)</span>
-<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co">#&gt; Total cases = 245 and p = 0.959: using Normal approximation to binomial likelihood.</span></span>
-<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co">#&gt;   severity_estimate severity_low severity_high</span></span>
-<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="co">#&gt; 1            0.9742       0.8356        0.9877</span></span></code></pre></div>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co">#&gt;   severity_estimate severity_low severity_high</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co">#&gt; 1            0.9576       0.9275        0.9782</span></span></code></pre></div>
 </details>
 </div>
 </div>

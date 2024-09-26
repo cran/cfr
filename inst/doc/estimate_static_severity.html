@@ -398,11 +398,9 @@ During an outbreak there is often a delay between cases being reported, and the 
 <span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co">#&gt; 3 1976-08-27     0      0</span></span>
 <span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co">#&gt; 4 1976-08-28     0      0</span></span>
 <span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co">#&gt; 5 1976-08-29     0      0</span></span>
-<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co">#&gt; 6 1976-08-30     0      0</span></span></code></pre></div>
-</details>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>df_ebola_subset <span class="ot">&lt;-</span> <span class="fu">filter</span>(ebola1976, date <span class="sc">&lt;=</span> <span class="st">&quot;1976-09-30&quot;</span>)</span></code></pre></div>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co">#&gt; 6 1976-08-30     0      0</span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>df_ebola_subset <span class="ot">&lt;-</span> <span class="fu">filter</span>(ebola1976, date <span class="sc">&lt;=</span> <span class="st">&quot;1976-09-30&quot;</span>)</span></code></pre></div>
 </details>
 <div id="onset-to-death-delay-distribution" class="section level3">
 <h3>Onset-to-death delay distribution</h3>
@@ -420,33 +418,31 @@ See the <a href="delay_distributions.html">vignette on delay distributions</a> f
 In the context of CFR estimation, the delay distribution is usually an ‘onset-to-death’ distribution.</p>
 <p>The resulting data frame contains two new columns, “estimated_outcomes”, for the number of cases whose outcomes are expected to be known on each day, and “u_t” for the ratio of cumulative number of cases estimated to have known outcomes and the cumulative number of cases reported until each date specified in data.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># calculate known death outcomes</span></span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>df_estimated_outcomes_ebola <span class="ot">&lt;-</span> <span class="fu">estimate_outcomes</span>(</span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">data =</span> df_ebola_subset,</span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">delay_density =</span> <span class="cf">function</span>(x) <span class="fu">dgamma</span>(x, <span class="at">shape =</span> <span class="fl">2.40</span>, <span class="at">scale =</span> <span class="fl">3.33</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>)</span>
-<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a></span>
-<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co"># print head of data frame</span></span>
-<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="fu">head</span>(df_estimated_outcomes_ebola)</span>
-<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt;         date cases deaths estimated_outcomes        u_t</span></span>
-<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co">#&gt; 1 1976-08-25     1      0         0.00000000 0.00000000</span></span>
-<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co">#&gt; 2 1976-08-26     0      0         0.03323030 0.03323030</span></span>
-<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co">#&gt; 3 1976-08-27     0      0         0.06494676 0.09817706</span></span>
-<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt; 4 1976-08-28     0      0         0.08485286 0.18302992</span></span>
-<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt; 5 1976-08-29     0      0         0.09400738 0.27703731</span></span>
-<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co">#&gt; 6 1976-08-30     0      0         0.09515185 0.37218916</span></span></code></pre></div>
-</details>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a></span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="co"># print tail of data frame</span></span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="fu">tail</span>(df_estimated_outcomes_ebola)</span>
-<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co">#&gt;          date cases deaths estimated_outcomes       u_t</span></span>
-<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co">#&gt; 32 1976-09-25    11      8           7.787856 0.5283224</span></span>
-<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co">#&gt; 33 1976-09-26     7     11           8.301252 0.5563894</span></span>
-<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co">#&gt; 34 1976-09-27     7      7           8.625233 0.5840532</span></span>
-<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="co">#&gt; 35 1976-09-28     4     13           8.761617 0.6207698</span></span>
-<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="co">#&gt; 36 1976-09-29     4     12           8.659704 0.6552761</span></span>
-<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="co">#&gt; 37 1976-09-30     3      9           8.371787 0.6904737</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># calculate known death outcomes</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>df_estimated_outcomes_ebola <span class="ot">&lt;-</span> <span class="fu">estimate_outcomes</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="at">data =</span> df_ebola_subset,</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="at">delay_density =</span> <span class="cf">function</span>(x) <span class="fu">dgamma</span>(x, <span class="at">shape =</span> <span class="fl">2.40</span>, <span class="at">scale =</span> <span class="fl">3.33</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>)</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co"># print head of data frame</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="fu">head</span>(df_estimated_outcomes_ebola)</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt;         date cases deaths estimated_outcomes        u_t</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt; 1 1976-08-25     1      0         0.00000000 0.00000000</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt; 2 1976-08-26     0      0         0.03323030 0.03323030</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#&gt; 3 1976-08-27     0      0         0.06494676 0.09817706</span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="co">#&gt; 4 1976-08-28     0      0         0.08485286 0.18302992</span></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co">#&gt; 5 1976-08-29     0      0         0.09400738 0.27703731</span></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co">#&gt; 6 1976-08-30     0      0         0.09515185 0.37218916</span></span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="co"># print tail of data frame</span></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a><span class="fu">tail</span>(df_estimated_outcomes_ebola)</span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a><span class="co">#&gt;          date cases deaths estimated_outcomes       u_t</span></span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a><span class="co">#&gt; 32 1976-09-25    11      8           7.787856 0.5283224</span></span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a><span class="co">#&gt; 33 1976-09-26     7     11           8.301252 0.5563894</span></span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a><span class="co">#&gt; 34 1976-09-27     7      7           8.625233 0.5840532</span></span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a><span class="co">#&gt; 35 1976-09-28     4     13           8.761617 0.6207698</span></span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a><span class="co">#&gt; 36 1976-09-29     4     12           8.659704 0.6552761</span></span>
+<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a><span class="co">#&gt; 37 1976-09-30     3      9           8.371787 0.6904737</span></span></code></pre></div>
 </details>
 <p>The estimated outcomes are lower than the number of cases at the beginning of an outbreak as the case outcomes are only likely to become known some days later; this also means that <code>u_t</code> is likely to be lower than 1.0 early in the outbreak.
 The <code>u_t</code> for an outbreak that has ended will be much closer to 1.0, as the outcomes of all reported cases are expected to be known (depending on the quality of outbreak monitoring).
@@ -461,22 +457,20 @@ For CFR estimation, we are primarily interested in the former as the goal is est
 <h3>Estimating the naive and corrected CFR</h3>
 <p>The function <code>cfr_static()</code> wraps the internal function <code>estimate_outcomes()</code> to provide a static CFR by automatically correcting for reporting delays if a delay density function is provided.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># calculating the naive CFR</span></span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">cfr_static</span>(</span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="at">data =</span> df_ebola_subset</span>
-<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>)</span>
-<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#&gt;   severity_estimate severity_low severity_high</span></span>
-<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">#&gt; 1         0.7197802    0.6485503     0.7836984</span></span></code></pre></div>
-</details>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a></span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="co"># calculating the corrected CFR</span></span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="fu">cfr_static</span>(</span>
-<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  df_ebola_subset,</span>
-<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>  <span class="at">delay_density =</span> <span class="cf">function</span>(x) <span class="fu">dgamma</span>(x, <span class="at">shape =</span> <span class="fl">2.40</span>, <span class="at">scale =</span> <span class="fl">3.33</span>)</span>
-<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>)</span>
-<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="co">#&gt;   severity_estimate severity_low severity_high</span></span>
-<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="co">#&gt; 1            0.9355        0.544        0.9795</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># calculating the naive CFR</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">cfr_static</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">data =</span> df_ebola_subset</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>)</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co">#&gt;   severity_estimate severity_low severity_high</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co">#&gt; 1         0.7197802    0.6485503     0.7836984</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co"># calculating the corrected CFR</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="fu">cfr_static</span>(</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>  df_ebola_subset,</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>  <span class="at">delay_density =</span> <span class="cf">function</span>(x) <span class="fu">dgamma</span>(x, <span class="at">shape =</span> <span class="fl">2.40</span>, <span class="at">scale =</span> <span class="fl">3.33</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>)</span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt;   severity_estimate severity_low severity_high</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt; 1                NA           NA            NA</span></span></code></pre></div>
 </details>
 </div>
 </div>
@@ -495,52 +489,50 @@ For CFR estimation, we are primarily interested in the former as the goal is est
 <p>This example shows static severity estimation using <em>cfr</em> and data from the Covid-19 pandemic in the United Kingdom.</p>
 <p>We load example Covid-19 daily case and death data provided with the <em>cfr</em> package as <code>covid_data</code>, and subset for the first year of U.K. data.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># get Covid data loaded with the package</span></span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;covid_data&quot;</span>)</span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a></span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co"># filter for the U.K</span></span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>df_covid_uk <span class="ot">&lt;-</span> <span class="fu">filter</span>(</span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>  covid_data,</span>
-<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>  country <span class="sc">==</span> <span class="st">&quot;United Kingdom&quot;</span>, date <span class="sc">&lt;=</span> <span class="st">&quot;2020-12-31&quot;</span></span>
-<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>)</span>
-<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a></span>
-<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="co"># View the first few rows and recall necessary columns: date, cases, deaths</span></span>
-<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="fu">head</span>(df_covid_uk)</span>
-<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="co">#&gt;         date        country cases deaths</span></span>
-<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="co">#&gt; 1 2020-01-03 United Kingdom     0      0</span></span>
-<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="co">#&gt; 2 2020-01-04 United Kingdom     0      0</span></span>
-<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="co">#&gt; 3 2020-01-05 United Kingdom     0      0</span></span>
-<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a><span class="co">#&gt; 4 2020-01-06 United Kingdom     0      0</span></span>
-<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a><span class="co">#&gt; 5 2020-01-07 United Kingdom     0      0</span></span>
-<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a><span class="co">#&gt; 6 2020-01-08 United Kingdom     0      0</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># get Covid data loaded with the package</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;covid_data&quot;</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co"># filter for the U.K</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>df_covid_uk <span class="ot">&lt;-</span> <span class="fu">filter</span>(</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>  covid_data,</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>  country <span class="sc">==</span> <span class="st">&quot;United Kingdom&quot;</span>, date <span class="sc">&lt;=</span> <span class="st">&quot;2020-12-31&quot;</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>)</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="co"># View the first few rows and recall necessary columns: date, cases, deaths</span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="fu">head</span>(df_covid_uk)</span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="co">#&gt;         date        country cases deaths</span></span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="co">#&gt; 1 2020-01-03 United Kingdom     0      0</span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="co">#&gt; 2 2020-01-04 United Kingdom     0      0</span></span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a><span class="co">#&gt; 3 2020-01-05 United Kingdom     0      0</span></span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a><span class="co">#&gt; 4 2020-01-06 United Kingdom     0      0</span></span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a><span class="co">#&gt; 5 2020-01-07 United Kingdom     0      0</span></span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a><span class="co">#&gt; 6 2020-01-08 United Kingdom     0      0</span></span></code></pre></div>
 </details>
 <div id="onset-to-death-distribution-for-covid-19" class="section level3">
 <h3>Onset-to-death distribution for Covid-19</h3>
 <p>We retrieve the appropriate distribution for Covid-19 from <span class="citation">Linton et al. (<a href="#ref-linton2020">2020</a>)</span>; this is a lognormal distribution with <span class="math inline">\(\mu\)</span> = 2.577 and <span class="math inline">\(\sigma\)</span> = 0.440.</p>
 <div class="alert alert-warning">
-<p><strong>Note that</strong> <span class="citation">Linton et al. (<a href="#ref-linton2020">2020</a>)</span> fitted a discrete lognormal distribution and we use a continuous distribution, and that we are ignoring uncertainty in the distribution parameters and likely under-estimating uncertainty in the CFR.</p>
+<p><strong>Note that</strong> <span class="citation">Linton et al. (<a href="#ref-linton2020">2020</a>)</span> fitted a discrete lognormal distribution and we use a continuous distribution, and that we are ignoring uncertainty in the distribution parameters and hence likely under-estimating uncertainty in the CFR.</p>
 </div>
 </div>
 <div id="estimating-the-naive-and-corrected-cfr-1" class="section level3">
 <h3>Estimating the naive and corrected CFR</h3>
 <p>Finally, we calculate the naive and corrected CFRs for the Covid-19 pandemic in the U.K.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># calculating the naive CFR</span></span>
-<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="fu">cfr_static</span>(</span>
-<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  df_covid_uk</span>
-<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>)</span>
-<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="co">#&gt;   severity_estimate severity_low severity_high</span></span>
-<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="co">#&gt; 1        0.03640132   0.03617238     0.0366313</span></span></code></pre></div>
-</details>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a></span>
-<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="co"># calculating the corrected CFR</span></span>
-<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="fu">cfr_static</span>(</span>
-<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>  df_covid_uk,</span>
-<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>  <span class="at">delay_density =</span> <span class="cf">function</span>(x) <span class="fu">dlnorm</span>(x, <span class="at">meanlog =</span> <span class="fl">2.577</span>, <span class="at">sdlog =</span> <span class="fl">0.440</span>)</span>
-<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>)</span>
-<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a><span class="co">#&gt;   severity_estimate severity_low severity_high</span></span>
-<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a><span class="co">#&gt; 1            0.0465       0.0462        0.0467</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># calculating the naive CFR</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">cfr_static</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  df_covid_uk</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>)</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#&gt;   severity_estimate severity_low severity_high</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">#&gt; 1        0.03640132   0.03617238     0.0366313</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co"># calculating the corrected CFR</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="fu">cfr_static</span>(</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>  df_covid_uk,</span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>  <span class="at">delay_density =</span> <span class="cf">function</span>(x) <span class="fu">dlnorm</span>(x, <span class="at">meanlog =</span> <span class="fl">2.577</span>, <span class="at">sdlog =</span> <span class="fl">0.440</span>)</span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>)</span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a><span class="co">#&gt;   severity_estimate severity_low severity_high</span></span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="co">#&gt; 1            0.0465       0.0462        0.0467</span></span></code></pre></div>
 </details>
 <hr />
 </div>
