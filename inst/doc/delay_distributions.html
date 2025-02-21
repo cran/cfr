@@ -366,7 +366,8 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a></span>
 <span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co"># some distribution packages</span></span>
 <span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">library</span>(distributional)</span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="fu">library</span>(distcrete)</span></code></pre></div>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co">#&gt; Warning: package &#39;distributional&#39; was built under R version 4.3.3</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="fu">library</span>(distcrete)</span></code></pre></div>
 </details>
 <div id="a-brief-primer-on-distributions-in-r" class="section level2">
 <h2>A brief primer on distributions in R</h2>
@@ -483,13 +484,13 @@ Evaluating the probability distribution function of such distributions at discre
 <h2>Links to <em>epiparameter</em></h2>
 <p>While users can pass functions from <em>stats</em>, and can manage distribution parameters using specialised packages and classes, it may be convenient to be able to access parameters reported in the epidemiological literature from a curated library.</p>
 <p>The forthcoming <a href="https://epiverse-trace.github.io/epiparameter/"><em>epiparameter</em> package</a> aims to be such a library of epidemiological delay distributions.
-The dedicated <code>&lt;epidist&gt;</code> class is expected to have similar functionality to other distribution classes, allowing easy definition of density functions that can be passed to <em>cfr</em>.</p>
+The dedicated <code>&lt;epiparameter&gt;</code> class is expected to have similar functionality to other distribution classes, allowing easy definition of density functions that can be passed to <em>cfr</em>.</p>
 <p>The pseudo-code below shows how this might work.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># </span><span class="al">NOTE</span><span class="co">: this is pseudo-code</span></span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>EPIDIST_OBJECT <span class="ot">&lt;-</span> <span class="fu">ACCESS_DISTRIBUTION</span>(disease, study)</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>EPIPARAMETER_OBJECT <span class="ot">&lt;-</span> <span class="fu">ACCESS_DISTRIBUTION</span>(disease, study)</span>
 <span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a></span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>cfr_<span class="sc">*</span>(<span class="at">data =</span> data, <span class="at">delay_density =</span> <span class="cf">function</span>(x) <span class="fu">density</span>(<span class="sc">&lt;</span>EPIDIST_OBJECT<span class="sc">&gt;</span>, x))</span></code></pre></div>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>cfr_<span class="sc">*</span>(<span class="at">data =</span> data, <span class="at">delay_density =</span> <span class="cf">function</span>(x) <span class="fu">density</span>(<span class="sc">&lt;</span>EPIPARAMETER_OBJECT<span class="sc">&gt;</span>, x))</span></code></pre></div>
 </details>
 </div>
 <div id="references" class="section level2 unnumbered">
